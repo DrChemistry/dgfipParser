@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
-import {
-  expandToPdfPaths,
-  pickFolder,
-  pickPdfFiles,
-} from "../lib/fileLoader";
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { expandToPdfPaths, pickFolder, pickPdfFiles } from "../lib/fileLoader";
 
 const props = defineProps<{
   disabled?: boolean;

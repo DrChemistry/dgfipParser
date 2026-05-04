@@ -18,7 +18,9 @@ import type { PageLine } from "./amountParser";
  * ReadableStream, which throws "undefined is not a function" near readableStream.
  * We mirror the same aggregation using `getReader().read()` instead.
  */
-async function getTextContentAggregated(page: PDFPageProxy): Promise<TextContent> {
+async function getTextContentAggregated(
+  page: PDFPageProxy,
+): Promise<TextContent> {
   const stream = page.streamTextContent();
   const reader = stream.getReader();
   const textContent: TextContent = {

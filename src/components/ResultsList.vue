@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { buildCsv, downloadCsv } from "../lib/csv";
 import type { FileReport } from "../lib/report";
 import FileResult from "./FileResult.vue";
-import { buildCsv, downloadCsv } from "../lib/csv";
 
 const props = defineProps<{
   reports: FileReport[];
@@ -33,9 +33,7 @@ const totals = computed(() => {
 });
 
 const allDone = computed(() =>
-  props.reports.every(
-    (r) => r.status === "done" || r.status === "error",
-  ),
+  props.reports.every((r) => r.status === "done" || r.status === "error"),
 );
 
 const sortedReports = computed(() => {
@@ -61,11 +59,15 @@ function exportCsv() {
   <section v-if="reports.length > 0" class="results">
     <header class="summary">
       <div class="counts">
-        <span><strong>{{ totals.total }}</strong> fichier(s)</span>
+        <span
+          ><strong>{{ totals.total }}</strong> fichier(s)</span
+        >
         <span class="sep">&middot;</span>
         <span>{{ totals.processed }} analyse(s)</span>
         <span class="sep">&middot;</span>
-        <span class="hit">{{ totals.withMatches }} avec montant &gt; seuil</span>
+        <span class="hit"
+          >{{ totals.withMatches }} avec montant &gt; seuil</span
+        >
         <span class="sep">&middot;</span>
         <span>{{ totals.totalMatches }} occurrence(s)</span>
         <span v-if="totals.errors > 0" class="sep">&middot;</span>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import type { FileReport } from "../lib/report";
 import { formatAmount } from "../lib/amountParser";
+import type { FileReport } from "../lib/report";
 
 const props = defineProps<{
   report: FileReport;
@@ -23,7 +23,6 @@ const statusLabel = computed(() => {
     case "error":
       return "Erreur";
   }
-  return "";
 });
 
 const variant = computed(() => {

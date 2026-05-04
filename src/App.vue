@@ -24,8 +24,11 @@ async function onPaths(paths: string[]) {
   const newPaths = paths.filter((p) => !known.has(p));
   if (newPaths.length === 0) return;
 
-  // Push placeholders so the UI shows them immediately.
-  const newReports = newPaths.map(makeInitialReport);
+  // Each row must be a reactive object we keep a reference to. If we push a
+  // plain object, Vue stores a proxy in the array while `newReports` still held
+  // raw objects — `processFile` would mutate the raw copy and the UI would stay
+  // stuck on "Analyse en cours".
+  const newReports = newPaths.map((p) => reactive(makeInitialReport(p)));
   for (const r of newReports) reports.push(r);
 
   isProcessing.value = true;
