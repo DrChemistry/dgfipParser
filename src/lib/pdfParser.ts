@@ -143,7 +143,6 @@ export async function extractLines(bytes: Uint8Array): Promise<PageLine[]> {
       const page = await doc.getPage(pageNumber);
       try {
         const content = await getTextContentAggregated(page);
-        console.log("Content:", content);
         const positioned: PositionedItem[] = [];
         for (const raw of content.items) {
           if (!isTextItem(raw)) continue;
