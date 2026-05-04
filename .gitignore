@@ -30,6 +30,6 @@ src-tauri/gen/schemas/
 # Generated artifacts
 public/pdf.worker.min.mjs
 public/standard_fonts/
-src-tauri/icons/*.png
-src-tauri/icons/*.icns
-src-tauri/icons/*.ico
+# Icon source drafts (keep app-icon-1024.png as master for `tauri icon`)
+app-icon-source.png
+app-icon-square.png

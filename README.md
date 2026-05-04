@@ -38,9 +38,9 @@ npm test               # lance les tests Vitest (regex / parser de montants)
 npm run tauri build    # produit un binaire signable dans src-tauri/target/release/bundle/
 ```
 
-> Les icones generees automatiquement sont des placeholders. Pour produire un
-> jeu d'icones complet (incluant `.icns` et `.ico`), utiliser :
-> `npx @tauri-apps/cli icon chemin/vers/source.png`.
+> Icone d'application : fichier maitre `app-icon-1024.png` (1024×1024). Pour
+> regenerer les fichiers dans `src-tauri/icons/` :
+> `npx @tauri-apps/cli icon app-icon-1024.png`.
 
 ## Regle metier
 
