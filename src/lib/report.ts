@@ -1,7 +1,7 @@
 import type { AmountMatch } from "./amountParser";
 import { findMatches } from "./amountParser";
-import { extractLines } from "./pdfParser";
 import { basename, readPdfBytes } from "./fileLoader";
+import { extractLines } from "./pdfParser";
 
 export type FileStatus = "pending" | "processing" | "done" | "error";
 

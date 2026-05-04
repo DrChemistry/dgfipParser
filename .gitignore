@@ -29,6 +29,7 @@ src-tauri/gen/schemas/
 
 # Generated artifacts
 public/pdf.worker.min.mjs
+public/standard_fonts/
 src-tauri/icons/*.png
 src-tauri/icons/*.icns
 src-tauri/icons/*.ico

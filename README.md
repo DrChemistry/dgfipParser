@@ -22,7 +22,7 @@ processus natif Tauri puis analyses dans la webview avec PDF.js.
 ## Demarrage
 
 ```bash
-npm install            # installe les deps + copie le worker PDF.js et genere les icones
+npm install            # deps + copie worker PDF.js, polices standard PDF.js, icones
 npm run tauri dev      # lance l'application en mode developpement
 ```
 

@@ -10,7 +10,7 @@
     "tauri": "tauri",
     "test": "vitest run",
     "test:watch": "vitest",
-    "postinstall": "node scripts/copy-pdf-worker.mjs && node scripts/generate-icons.mjs"
+    "postinstall": "node scripts/copy-pdf-assets.mjs && node scripts/generate-icons.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.11.0",

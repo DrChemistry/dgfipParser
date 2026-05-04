@@ -5,13 +5,54 @@
 // the visual lines that the user sees, then concatenate them in reading order.
 
 import * as pdfjs from "pdfjs-dist";
-import type { TextItem } from "pdfjs-dist/types/src/display/api";
+import type {
+  PDFPageProxy,
+  TextContent,
+  TextItem,
+} from "pdfjs-dist/types/src/display/api";
 import type { PageLine } from "./amountParser";
 
-// Wire the worker. The script `scripts/copy-pdf-worker.mjs` copies the worker
-// bundle into /public so this URL is served from the same origin as the SPA.
-// In dev (vite serve) and prod (tauri bundled assets) this resolves correctly.
+/**
+ * PDF.js `getTextContent()` aggregates chunks with `for await (...)` over a
+ * ReadableStream. WebKit (Tauri/WKWebView) often lacks async-iteration on
+ * ReadableStream, which throws "undefined is not a function" near readableStream.
+ * We mirror the same aggregation using `getReader().read()` instead.
+ */
+async function getTextContentAggregated(page: PDFPageProxy): Promise<TextContent> {
+  const stream = page.streamTextContent();
+  const reader = stream.getReader();
+  const textContent: TextContent = {
+    items: [],
+    styles: Object.create(null),
+    lang: null,
+  };
+  try {
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (!value) continue;
+      textContent.lang ??= value.lang ?? null;
+      Object.assign(textContent.styles, value.styles);
+      textContent.items.push(...value.items);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  return textContent;
+}
+
+// Wire the worker. `scripts/copy-pdf-assets.mjs` copies the worker bundle into
+// /public so this URL is served from the same origin as the SPA.
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+
+/** Base URL for bundled Liberation/Foxit metric files (trailing slash). */
+function bundledStandardFontDataUrl(): string {
+  if (typeof document !== "undefined" && document.baseURI) {
+    return new URL("standard_fonts/", document.baseURI).href;
+  }
+  // Vitest / SSR fallback (extractLines is only used in the webview)
+  return new URL("standard_fonts/", "http://localhost/").href;
+}
 
 // Two text items are considered to be on the same line if their baseline Y
 // coordinates differ by less than this value (in PDF user units, i.e. roughly
@@ -89,15 +130,18 @@ export async function extractLines(bytes: Uint8Array): Promise<PageLine[]> {
     // We don't render fonts, only extract text, so disabling FontFace avoids
     // pulling in font worker resources we don't need.
     disableFontFace: true,
+    // With disableFontFace, PDF.js still needs metric data for the 14 standard
+    // PDF fonts — ship it under /standard_fonts/ (see scripts/copy-pdf-assets.mjs).
+    standardFontDataUrl: bundledStandardFontDataUrl(),
   });
-
   const doc = await loadingTask.promise;
   try {
     const result: PageLine[] = [];
     for (let pageNumber = 1; pageNumber <= doc.numPages; pageNumber++) {
       const page = await doc.getPage(pageNumber);
       try {
-        const content = await page.getTextContent();
+        const content = await getTextContentAggregated(page);
+        console.log("Content:", content);
         const positioned: PositionedItem[] = [];
         for (const raw of content.items) {
           if (!isTextItem(raw)) continue;
